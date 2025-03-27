@@ -34,3 +34,11 @@
 *.exe
 *.out
 *.app
+
+# Added in @hankotanks fork
+Makefile
+VieSchedppGUI
+VieSchedppGUI.exe
+.qmake.stash
+.cpp
+.h
