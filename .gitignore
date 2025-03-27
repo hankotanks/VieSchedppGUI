@@ -40,6 +40,9 @@ Makefile
 VieSchedppGUI
 VieSchedppGUI.exe
 .qmake.stash
+AUTO_DOWNLOAD_CATALOGS/*
+AUTO_DOWNLOAD_MASTER/*
+settings.xml
 *.cpp
 *.h
 !main.cpp
