@@ -40,5 +40,9 @@ Makefile
 VieSchedppGUI
 VieSchedppGUI.exe
 .qmake.stash
-.cpp
-.h
+*.cpp
+*.h
+!main.cpp
+!mainwindow.cpp
+!mainwindow.h
+!mainwindows_save_and_load.cpp
