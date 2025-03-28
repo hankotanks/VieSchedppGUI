@@ -6853,3 +6853,80 @@ void MainWindow::on_spinBox_int_downtime_valueChanged(int arg1)
     stationSetupWidget->on_pushButton_IvsDownTime_clicked();
 }
 
+
+void MainWindow::on_actionGlobal_Opt_triggered()
+{
+    ui->main_stacked->setCurrentIndex(25);
+}
+
+
+void MainWindow::on_globalopt_schedParseButton_clicked()
+{
+    QString path = ui->globalopt_schedPathEntry->text();
+    if(path.length()>4){
+        if(path.right(4) == ".skd"){
+            try{
+                VieVS::SkdParser mySkdParser(path.toStdString());
+                try {
+                    mySkdParser.read();
+                }catch(...){
+                    QString message = QString("Error reading session:\n").append(path);
+                    QMessageBox::critical(this, "error reading session", message);
+                    return;
+                }
+
+                parsedSchedule = mySkdParser.createScheduler();
+
+                auto parsedNetwork = parsedSchedule->getNetwork();
+                auto parsedStations = parsedNetwork.getStations();
+                QStringList parsedStationNames = {};
+                std::map<std::string, int> parsedStationTlcToCol;
+                ui->globalopt_scoreTable->setColumnCount(parsedStations.size());
+                for(auto i = 0; i < parsedStations.size(); ++i) {
+                    auto currentStationTlc = parsedStations[i].getAlternativeName();
+                    parsedStationTlcToCol.insert({currentStationTlc, i});
+                    parsedStationNames.append(QString::fromStdString(currentStationTlc));
+                }
+                ui->globalopt_scoreTable->setHorizontalHeaderLabels(parsedStationNames);
+
+                auto parsedSources = parsedSchedule->getSourceList();
+                auto parsedScans = parsedSchedule->getScans();
+                QStringList parsedScanSourceNames = {};
+                ui->globalopt_scoreTable->setRowCount(parsedScans.size());
+                for(auto i = 0; i < parsedScans.size(); ++i) {
+                    auto currentScan = parsedScans[i];
+                    auto currentStationIds = currentScan.getStationIds();
+                    for(int j = 0; j < currentStationIds.size(); ++j) {
+                        auto currentStationTlc = parsedNetwork.getStation(currentStationIds[j]).getAlternativeName();
+                        auto currentCol = parsedStationTlcToCol[currentStationTlc];
+                        ui->globalopt_scoreTable->setItem(i, currentCol, new QTableWidgetItem("x"));
+                    }
+                    auto currentSourceName = parsedSources.getSource(currentScan.getSourceId())->getName();
+                    parsedScanSourceNames.append(QString::fromStdString(currentSourceName));
+                }
+                ui->globalopt_scoreTable->setVerticalHeaderLabels(parsedScanSourceNames);
+
+            } catch(...) {
+                QString message = QString("Error reading session:\n").append(path);
+                QMessageBox::critical(this, "error reading session", message);
+            }
+
+        }else{
+            QString message = QString("Error reading session:\n").append(path);
+            QMessageBox::critical(this, "error reading session", message);
+        }
+    }
+}
+
+
+void MainWindow::on_globalopt_schedBrowse_clicked()
+{
+    QString startPath = ui->globalopt_schedPathEntry->text();
+    QString path = QFileDialog::getOpenFileName(this, "Browse to skd file", startPath, tr("skd files (*.skd)"));
+    if( !path.isEmpty() ){
+        ui->globalopt_schedPathEntry->setText(path);
+        ui->globalopt_schedPathEntry->setFocus();
+        ui->globalopt_schedParseButton->click();
+    }
+}
+

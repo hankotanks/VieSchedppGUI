@@ -543,6 +543,12 @@ private slots:
 
     void on_spinBox_int_downtime_valueChanged(int arg1);
 
+    void on_actionGlobal_Opt_triggered();
+
+    void on_globalopt_schedParseButton_clicked();
+
+    void on_globalopt_schedBrowse_clicked();
+
 private:
     Ui::MainWindow *ui;
     QString mainPath;
