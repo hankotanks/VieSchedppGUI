@@ -1264,7 +1264,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>958</width>
+             <width>316</width>
              <height>805</height>
             </rect>
            </property>
@@ -7281,8 +7281,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>972</width>
-             <height>677</height>
+             <width>659</width>
+             <height>670</height>
             </rect>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_89">
@@ -11288,85 +11288,94 @@ https://git.geo.tuwien.ac.at/vievs/VieSchedpp/VieSchedppGUI.git&quot;&gt;&lt;spa
        </layout>
       </widget>
       <widget class="QWidget" name="globalopt">
-       <widget class="QWidget" name="layoutWidget_2">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>10</y>
-          <width>951</width>
-          <height>28</height>
-         </rect>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_47">
-         <item>
-          <widget class="QLabel" name="label_46">
-           <property name="text">
-            <string>session</string>
+       <layout class="QVBoxLayout" name="verticalLayout_106">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_47">
+          <item>
+           <widget class="QLabel" name="label_46">
+            <property name="text">
+             <string>session</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="globalopt_schedPathEntry">
+            <property name="toolTip">
+             <string>path to skd file</string>
+            </property>
+            <property name="statusTip">
+             <string>path to skd file</string>
+            </property>
+            <property name="text">
+             <string>../out/</string>
+            </property>
+            <property name="placeholderText">
+             <string>*.skd</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="globalopt_schedBrowse">
+            <property name="toolTip">
+             <string>browse for file</string>
+            </property>
+            <property name="statusTip">
+             <string>browse for file</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="myresources.qrc">
+              <normaloff>:/icons/icons/folder-saved-search.png</normaloff>:/icons/icons/folder-saved-search.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="globalopt_schedParseButton">
+            <property name="toolTip">
+             <string>parse file</string>
+            </property>
+            <property name="statusTip">
+             <string>parse file</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="myresources.qrc">
+              <normaloff>:/icons/icons/document-import-2.png</normaloff>:/icons/icons/document-import-2.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QScrollArea" name="scrollArea">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>972</width>
+             <height>318</height>
+            </rect>
            </property>
+           <layout class="QVBoxLayout" name="verticalLayout_106">
+            <item>
+             <widget class="QTableWidget" name="globalopt_scoreTable"/>
+            </item>
+            <item>
+             <widget class="QTableWidget" name="globalopt_skyCoverageTable"/>
+            </item>
+           </layout>
           </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="globalopt_schedPathEntry">
-           <property name="toolTip">
-            <string>path to skd file</string>
-           </property>
-           <property name="statusTip">
-            <string>path to skd file</string>
-           </property>
-           <property name="text">
-            <string>../out/</string>
-           </property>
-           <property name="placeholderText">
-            <string>*.skd</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="globalopt_schedBrowse">
-           <property name="toolTip">
-            <string>browse for file</string>
-           </property>
-           <property name="statusTip">
-            <string>browse for file</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="myresources.qrc">
-             <normaloff>:/icons/icons/folder-saved-search.png</normaloff>:/icons/icons/folder-saved-search.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="globalopt_schedParseButton">
-           <property name="toolTip">
-            <string>parse file</string>
-           </property>
-           <property name="statusTip">
-            <string>parse file</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="myresources.qrc">
-             <normaloff>:/icons/icons/document-import-2.png</normaloff>:/icons/icons/document-import-2.png</iconset>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QTableWidget" name="globalopt_scoreTable">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>50</y>
-          <width>951</width>
-          <height>641</height>
-         </rect>
-        </property>
-       </widget>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>

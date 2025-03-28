@@ -6879,6 +6879,11 @@ void MainWindow::on_globalopt_schedParseButton_clicked()
 
                 auto parsedNetwork = parsedSchedule->getNetwork();
                 auto parsedStations = parsedNetwork.getStations();
+                auto parsedSources = parsedSchedule->getSourceList();
+                auto parsedScans = parsedSchedule->getScans();
+                auto parsedSkyCoverages = parsedNetwork.getSkyCoverages();
+
+                // Populate scoreTable
                 QStringList parsedStationNames = {};
                 std::map<std::string, int> parsedStationTlcToCol;
                 ui->globalopt_scoreTable->setColumnCount(parsedStations.size());
@@ -6889,8 +6894,6 @@ void MainWindow::on_globalopt_schedParseButton_clicked()
                 }
                 ui->globalopt_scoreTable->setHorizontalHeaderLabels(parsedStationNames);
 
-                auto parsedSources = parsedSchedule->getSourceList();
-                auto parsedScans = parsedSchedule->getScans();
                 QStringList parsedScanSourceNames = {};
                 ui->globalopt_scoreTable->setRowCount(parsedScans.size());
                 for(auto i = 0; i < parsedScans.size(); ++i) {
@@ -6906,6 +6909,29 @@ void MainWindow::on_globalopt_schedParseButton_clicked()
                 }
                 ui->globalopt_scoreTable->setVerticalHeaderLabels(parsedScanSourceNames);
 
+                // populate skyCoverageTable
+                ui->globalopt_skyCoverageTable->setColumnCount(12);
+                ui->globalopt_skyCoverageTable->setHorizontalHeaderLabels({"a13m8", "a13m15", "a13m30", "a13m60", "a25m8", "a25m15", "a25m30", "a25m60", "a37m8", "a37m15", "a37m30", "a37m60"});
+                // ui->globalopt_skyCoverageTable->setHorizontalHeaderLabels({"a13", "a25", "a37"});
+                for(const auto& [currentStationId, currentSkyCovId] : parsedNetwork.getStaid2skyCoverageId()) {
+                    auto i = ui->globalopt_skyCoverageTable->rowCount();
+                    ui->globalopt_skyCoverageTable->insertRow(i);
+                    auto currentStation = parsedNetwork.getStation(currentStationId);
+                    ui->globalopt_skyCoverageTable->setVerticalHeaderItem(i, new QTableWidgetItem(QString::fromStdString(currentStation.getAlternativeName())));
+                    auto currentSkyCov = parsedNetwork.getSkyCoverage(currentSkyCovId);
+                    ui->globalopt_skyCoverageTable->setItem(i, 0 , new QTableWidgetItem(QString::number(currentSkyCov.getSkyCoverageScore_a13m8())));
+                    ui->globalopt_skyCoverageTable->setItem(i, 1 , new QTableWidgetItem(QString::number(currentSkyCov.getSkyCoverageScore_a13m15())));
+                    ui->globalopt_skyCoverageTable->setItem(i, 2 , new QTableWidgetItem(QString::number(currentSkyCov.getSkyCoverageScore_a13m30())));
+                    ui->globalopt_skyCoverageTable->setItem(i, 3 , new QTableWidgetItem(QString::number(currentSkyCov.getSkyCoverageScore_a13m60())));
+                    ui->globalopt_skyCoverageTable->setItem(i, 4 , new QTableWidgetItem(QString::number(currentSkyCov.getSkyCoverageScore_a25m8())));
+                    ui->globalopt_skyCoverageTable->setItem(i, 5 , new QTableWidgetItem(QString::number(currentSkyCov.getSkyCoverageScore_a25m15())));
+                    ui->globalopt_skyCoverageTable->setItem(i, 6 , new QTableWidgetItem(QString::number(currentSkyCov.getSkyCoverageScore_a25m30())));
+                    ui->globalopt_skyCoverageTable->setItem(i, 7 , new QTableWidgetItem(QString::number(currentSkyCov.getSkyCoverageScore_a25m60())));
+                    ui->globalopt_skyCoverageTable->setItem(i, 8 , new QTableWidgetItem(QString::number(currentSkyCov.getSkyCoverageScore_a37m8())));
+                    ui->globalopt_skyCoverageTable->setItem(i, 9 , new QTableWidgetItem(QString::number(currentSkyCov.getSkyCoverageScore_a37m15())));
+                    ui->globalopt_skyCoverageTable->setItem(i, 10, new QTableWidgetItem(QString::number(currentSkyCov.getSkyCoverageScore_a37m30())));
+                    ui->globalopt_skyCoverageTable->setItem(i, 11, new QTableWidgetItem(QString::number(currentSkyCov.getSkyCoverageScore_a37m60())));
+                }
             } catch(...) {
                 QString message = QString("Error reading session:\n").append(path);
                 QMessageBox::critical(this, "error reading session", message);
