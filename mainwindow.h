@@ -549,6 +549,12 @@ private slots:
 
     void on_globalopt_schedBrowse_clicked();
 
+    void on_actionSource_Trajectories_triggered();
+
+    void on_srcTraj_buildModelButton_clicked();
+
+    void on_srcTraj_selectedStations_clicked(const QModelIndex &index);
+
 private:
     Ui::MainWindow *ui;
     QString mainPath;
@@ -569,6 +575,9 @@ private:
     MultiColumnSortFilterProxyModel *allSpacecraftProxyModel;
 
     QStandardItemModel *selectedStationModel;
+    std::map<std::string, std::vector<VieVS::PointingVector>> *srcTraj = new std::map<std::string, std::vector<VieVS::PointingVector>>();
+    bool srcTraj_enabled = false;
+
     QStandardItemModel *selectedSourceModel;
     QStandardItemModel *selectedBaselineModel;
     QStandardItemModel *selectedSatelliteModel;
@@ -666,6 +675,8 @@ private:
     DownloadManager *downloadManager = new DownloadManager();
 
     void download();
+
+    void srcTraj_setEnabled(bool enabled);
 
 
 //    void searchSessionCodeInMasterFile(QString code);

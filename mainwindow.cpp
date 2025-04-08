@@ -268,8 +268,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->treeView_allSelectedStations->sortByColumn(0, Qt::AscendingOrder);
     ui->treeView_allSelectedStations->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-    connect(ui->lineEdit_allStationsFilter, &QLineEdit::textChanged, allStationProxyModel, &MultiColumnSortFilterProxyModel::addFilterFixedString);
+    ui->srcTraj_selectedStations->setModel(selectedStationModel);
+    for(auto i = 2; i <= 18; ++i) ui->srcTraj_selectedStations->hideColumn(i);
+    ui->srcTraj_selectedStations->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
 
+    connect(ui->lineEdit_allStationsFilter, &QLineEdit::textChanged, allStationProxyModel, &MultiColumnSortFilterProxyModel::addFilterFixedString);
 
     // ----------------------
 
@@ -4398,6 +4401,8 @@ void MainWindow::on_pushButton_loadNetwork_clicked()
 
 void MainWindow::networkSizeChanged()
 {
+    srcTraj_setEnabled(false);
+
     int size = selectedStationModel->rowCount();
     ui->label_network_selected->setText(QString("selected: %1").arg(size));
 
@@ -6954,5 +6959,37 @@ void MainWindow::on_globalopt_schedBrowse_clicked()
         ui->globalopt_schedPathEntry->setFocus();
         ui->globalopt_schedParseButton->click();
     }
+}
+
+void MainWindow::srcTraj_setEnabled(bool enabled) {
+    ui->srcTraj_selectedStations->setEnabled(enabled);
+    ui->srcTraj_stationTraj->setEnabled(enabled);
+    ui->srcTraj_buildModelButton->setEnabled(!enabled);
+    srcTraj_enabled = enabled;
+}
+
+
+void MainWindow::on_actionSource_Trajectories_triggered()
+{
+    ui->main_stacked->setCurrentIndex(26);
+}
+
+
+void MainWindow::on_srcTraj_buildModelButton_clicked()
+{
+    // TODO: populate MainWindow::srcTraj using Initializer::minutesVisible as a template
+
+    srcTraj_setEnabled(true);
+}
+
+
+void MainWindow::on_srcTraj_selectedStations_clicked(const QModelIndex &index)
+{
+    int row = index.row();
+    QString stationName = selectedStationModel->index(row, 0).data().toString();
+
+    // TODO: populate MainWindow::srcTraj_stationTraj table with source trajectories
+    //       rows: sources
+    //       cols: timestamps
 }
 

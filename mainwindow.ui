@@ -22,7 +22,7 @@
     <item>
      <widget class="QStackedWidget" name="main_stacked">
       <property name="currentIndex">
-       <number>25</number>
+       <number>26</number>
       </property>
       <widget class="QWidget" name="welcome">
        <property name="toolTip">
@@ -11361,7 +11361,7 @@ https://git.geo.tuwien.ac.at/vievs/VieSchedpp/VieSchedppGUI.git&quot;&gt;&lt;spa
              <x>0</x>
              <y>0</y>
              <width>972</width>
-             <height>318</height>
+             <height>643</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_106">
@@ -11374,6 +11374,38 @@ https://git.geo.tuwien.ac.at/vievs/VieSchedpp/VieSchedppGUI.git&quot;&gt;&lt;spa
            </layout>
           </widget>
          </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="sourcetrajectories">
+       <layout class="QHBoxLayout" name="horizontalLayout_106">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_44">
+          <item>
+           <widget class="QTableView" name="srcTraj_selectedStations">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="srcTraj_buildModelButton">
+            <property name="text">
+             <string>Build Source Trajectory Model</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_440">
+          <item>
+           <widget class="QTableView" name="srcTraj_stationTraj"/>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -11539,6 +11571,7 @@ https://git.geo.tuwien.ac.at/vievs/VieSchedpp/VieSchedppGUI.git&quot;&gt;&lt;spa
     <addaction name="actionSkd_Parser"/>
     <addaction name="separator"/>
     <addaction name="actionGlobal_Opt"/>
+    <addaction name="actionSource_Trajectories"/>
    </widget>
    <addaction name="menufile"/>
    <addaction name="menubasic"/>
@@ -11560,6 +11593,7 @@ https://git.geo.tuwien.ac.at/vievs/VieSchedpp/VieSchedppGUI.git&quot;&gt;&lt;spa
    <addaction name="actionSkd_Parser"/>
    <addaction name="separator"/>
    <addaction name="actionGlobal_Opt"/>
+   <addaction name="actionSource_Trajectories"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNew">
@@ -11860,6 +11894,18 @@ https://git.geo.tuwien.ac.at/vievs/VieSchedpp/VieSchedppGUI.git&quot;&gt;&lt;spa
    </property>
    <property name="toolTip">
     <string>Global Optimization</string>
+   </property>
+  </action>
+  <action name="actionSource_Trajectories">
+   <property name="icon">
+    <iconset resource="myresources.qrc">
+     <normaloff>:/icons/icons/source_group.png</normaloff>:/icons/icons/source_group.png</iconset>
+   </property>
+   <property name="text">
+    <string>Source Trajectories</string>
+   </property>
+   <property name="toolTip">
+    <string>Source Trajectories</string>
    </property>
   </action>
  </widget>
