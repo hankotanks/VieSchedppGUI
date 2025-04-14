@@ -18,6 +18,12 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <memory>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <boost/optional.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -5452,18 +5458,24 @@ void MainWindow::on_pushButton_loadSourceList_clicked()
 
 void MainWindow::sourceListChanged()
 {
+    srcTraj_setEnabled(false);
+
     int size = selectedSourceModel->rowCount();
     ui->label_sourceList_selected->setText(QString("selected: %1").arg(size));
 }
 
 void MainWindow::satelliteListChanged()
 {
+    srcTraj_setEnabled(false);
+
     int size = selectedSatelliteModel->rowCount();
     ui->label_satelliteList_selected->setText(QString("selected: %1").arg(size));
 }
 
 void MainWindow::spacecraftListChanged()
 {
+    srcTraj_setEnabled(false);
+
     int size = selectedSpacecraftModel->rowCount();
     ui->label_spacecraftList_selected->setText(QString("selected: %1").arg(size));
 }
@@ -6964,13 +6976,20 @@ void MainWindow::on_globalopt_schedBrowse_clicked()
 void MainWindow::srcTraj_setEnabled(bool enabled) {
     ui->srcTraj_selectedStations->setEnabled(enabled);
     ui->srcTraj_stationTraj->setEnabled(enabled);
-    ui->srcTraj_buildModelButton->setEnabled(!enabled);
+
+    if(!enabled) {
+        ui->srcTraj_stationTraj->clear();
+        ui->srcTraj_selectedStations->selectionModel()->clearSelection();
+    }
+
+    ui->srcTraj_buildModelButton->setEnabled(!enabled && (selectedStationModel->rowCount() > 0));
     srcTraj_enabled = enabled;
 }
 
 
 void MainWindow::on_actionSource_Trajectories_triggered()
 {
+    ui->srcTraj_stationTraj->setHeaderLabels({"Name", "Time", "Az", "El"});
     ui->main_stacked->setCurrentIndex(26);
 }
 
@@ -6978,18 +6997,96 @@ void MainWindow::on_actionSource_Trajectories_triggered()
 void MainWindow::on_srcTraj_buildModelButton_clicked()
 {
     // TODO: populate MainWindow::srcTraj using Initializer::minutesVisible as a template
+    srcTraj_network.reset(VieVS::Network());
+    srcTraj_source_list.reset(VieVS::SourceList());
 
+    for(auto i = 0; i < selectedSourceModel->rowCount(); ++i) {
+        std::shared_ptr<VieVS::Quasar> src_curr = std::make_shared<VieVS::Quasar>(
+            // src_name
+            selectedSourceModel->item(i, 0)->text().toStdString(),
+            // src_name2
+            std::string(),
+            // src_ra_deg
+            std::stod(selectedSourceModel->item(i, 1)->text().toStdString()),
+            // src_de_deg
+            std::stod(selectedSourceModel->item(i, 2)->text().toStdString()),
+            // src_flux
+            srcTraj_dummyFlux);
+        srcTraj_source_list.value().addQuasar(src_curr);
+    }
+
+    for(auto i = 0; i < selectedStationModel->rowCount(); ++i) {
+        double x, y, z;
+        x = std::stod(selectedStationModel->item(i, 16)->text().toStdString());
+        y = std::stod(selectedStationModel->item(i, 17)->text().toStdString());
+        z = std::stod(selectedStationModel->item(i, 18)->text().toStdString());
+        VieVS::Position sta_position(x, y, z);
+        VieVS::Station sta_curr(
+            // sta_name: std::string
+            selectedStationModel->item(i, 0)->text().toStdString(),
+            // tlc: std::string
+            selectedStationModel->item(i, 1)->text().toStdString(),
+            // sta_antenna: td::shared_ptr<AbstractAntenna>
+            nullptr,
+            // sta_cableWrap: std::shared_ptr<AbstractCableWrap>
+            nullptr,
+            // sta_position: std::shared_ptr<Position>
+            // std::shared_ptr<VieVS::Position>(sta_position),
+            std::make_shared<VieVS::Position>(x, y, z),
+            // sta_equip: std::shared_ptr<AbstractEquipment>
+            nullptr,
+            // sta_mask: std::shared_ptr<AbstractHorizonMask>
+            nullptr,
+            // unsigned long nSources
+            srcTraj_source_list.value().getNSrc()); // NOTE: should I include satellites and spacecraft here as well?
+        srcTraj_network.value().addStation(sta_curr);   
+    }
+
+    QDateTime startTime = ui->dateTimeEdit_sessionStart->dateTime();
+    QStringView format = QStringView(QString("yyyy-MM-ddThh:mm:ss"));
+    std::string time = startTime.toString(format).toStdString();
+    VieVS::TimeSystem::startTime = boost::date_time::parse_delimited_time<boost::posix_time::ptime>(time, 'T');
+    double hours = ui->doubleSpinBox_sessionDuration->value();
+    VieVS::TimeSystem::duration = (unsigned int) (hours * 3600.0);
+    QDateTime endTime = startTime.addSecs(VieVS::TimeSystem::duration);
+    time.replace(0, 14, startTime.toString(format).toStdString());
+    VieVS::TimeSystem::endTime = boost::date_time::parse_delimited_time<boost::posix_time::ptime>(time, 'T');
+    VieVS::TimeSystem::startSgp4 = VieVS::TimeSystem::internalTime2sgpt4Time(VieVS::TimeSystem::posixTime2InternalTime(VieVS::TimeSystem::startTime));
+    
+    VieVS::LookupTable::initialize();
+    VieVS::Initializer::initializeAstronomicalParameteres();
+
+    srcTraj = new VieVS::NetworkSourcePaths(srcTraj_network.value(), srcTraj_source_list.value());
+    
     srcTraj_setEnabled(true);
 }
 
 
 void MainWindow::on_srcTraj_selectedStations_clicked(const QModelIndex &index)
 {
+    ui->srcTraj_stationTraj->clear();
+
     int row = index.row();
-    QString stationName = selectedStationModel->index(row, 0).data().toString();
+    std::string station_name = selectedStationModel->index(row, 0).data().toString().toStdString();
+    const std::vector<VieVS::StationSourcePath>& source_paths = srcTraj->getStationSourcePaths(station_name);
 
-    // TODO: populate MainWindow::srcTraj_stationTraj table with source trajectories
-    //       rows: sources
-    //       cols: timestamps
+    for(auto i = 0; i < source_paths.size(); ++i) {
+        const VieVS::StationSourcePath& curr_path = source_paths[i];
+        unsigned long id = curr_path.getSourceId();
+        std::shared_ptr<VieVS::AbstractSource> curr_source = srcTraj_source_list.value().refSource(id);
+
+        QTreeWidgetItem* node = new QTreeWidgetItem(ui->srcTraj_stationTraj);
+        QString curr_source_name = QString::fromStdString(curr_source->getName());
+        node->setText(0, curr_source_name);
+
+        const std::vector<VieVS::PointingVector>& traj = curr_path.getVectors();
+        for(auto j = 0; j < traj.size(); ++j) {
+            const VieVS::PointingVector& curr_vec = traj[j];
+            
+            QTreeWidgetItem* entry = new QTreeWidgetItem(node);
+            entry->setText(1, QString::number(curr_vec.getTime()));
+            entry->setText(2, QString::number(curr_vec.getAz()));
+            entry->setText(3, QString::number(curr_vec.getEl()));
+        }
+    }
 }
-

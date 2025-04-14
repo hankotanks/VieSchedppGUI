@@ -228,6 +228,7 @@ SOURCES += \
     ../VieSchedpp/Simulator/Simulator.cpp \
     ../VieSchedpp/Simulator/Solver.cpp \
     ../VieSchedpp/Simulator/Unknown.cpp \
+    ../VieSchedpp/Station/NetworkSourcePaths.cpp \
     Utility/downloadmanager.cpp \
     Widgets/calibratorblockwidget.cpp \
     Widgets/mulitschedulingwidget.cpp \
@@ -373,6 +374,7 @@ HEADERS += \
     ../VieSchedpp/SGP4/OrbitalElements.h \
     ../VieSchedpp/SGP4/Observer.h \
     ../VieSchedpp/SGP4/Eci.h \
+    ../VieSchedpp/Station/NetworkSourcePaths.h \
     Delegates/comboboxdelegate.h \
     Delegates/doublespinboxdelegate.h \
     Delegates/spinboxdelegate.h \

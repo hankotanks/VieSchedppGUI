@@ -23,7 +23,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-
+#include <boost/optional.hpp>
 
 #include <QMainWindow>
 #include <QtCore>
@@ -575,7 +575,10 @@ private:
     MultiColumnSortFilterProxyModel *allSpacecraftProxyModel;
 
     QStandardItemModel *selectedStationModel;
-    std::map<std::string, std::vector<VieVS::PointingVector>> *srcTraj = new std::map<std::string, std::vector<VieVS::PointingVector>>();
+    boost::optional<VieVS::Network> srcTraj_network;
+    boost::optional<VieVS::SourceList> srcTraj_source_list;
+    VieVS::NetworkSourcePaths *srcTraj = nullptr;
+    std::unordered_map<std::string, std::unique_ptr<VieVS::AbstractFlux>> srcTraj_dummyFlux;
     bool srcTraj_enabled = false;
 
     QStandardItemModel *selectedSourceModel;

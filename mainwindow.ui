@@ -1264,7 +1264,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>316</width>
+             <width>958</width>
              <height>805</height>
             </rect>
            </property>
@@ -11360,8 +11360,8 @@ https://git.geo.tuwien.ac.at/vievs/VieSchedpp/VieSchedppGUI.git&quot;&gt;&lt;spa
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>972</width>
-             <height>643</height>
+             <width>88</width>
+             <height>164</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_106">
@@ -11403,7 +11403,13 @@ https://git.geo.tuwien.ac.at/vievs/VieSchedpp/VieSchedppGUI.git&quot;&gt;&lt;spa
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_440">
           <item>
-           <widget class="QTableView" name="srcTraj_stationTraj"/>
+           <widget class="QTreeWidget" name="srcTraj_stationTraj">
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
+           </widget>
           </item>
          </layout>
         </item>
