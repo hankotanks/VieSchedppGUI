@@ -589,6 +589,7 @@ private:
     std::unordered_map<std::string, std::unique_ptr<VieVS::AbstractFlux>> srcTraj_dummyFlux;
     bool srcTraj_enabled = false;
     bool srcTraj_skyPlotView_added = false;
+    unsigned long srcTraj_selectedStation;
 
     QStandardItemModel *selectedSourceModel;
     QStandardItemModel *selectedBaselineModel;

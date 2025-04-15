@@ -7068,13 +7068,20 @@ void MainWindow::on_srcTraj_selectedStations_clicked(const QModelIndex &index)
 {
     ui->srcTraj_stationTraj->clear();
 
-    int row = index.row();
-    std::string station_name = selectedStationModel->index(row, 0).data().toString().toStdString();
-    const std::vector<VieVS::StationSourcePath>& source_paths = srcTraj->getStationSourcePaths(station_name);
+    srcTraj_skyPlot->removeAllSeries();
+    srcTraj_skyPlotView->hide();
 
-    for(auto i = 0; i < source_paths.size(); ++i) {
-        const VieVS::StationSourcePath& curr_path = source_paths[i];
-        unsigned long id = curr_path.getSourceId();
+    int row = index.row();
+
+    std::string station_name = selectedStationModel->index(row, 0).data().toString().toStdString();
+    const std::map<unsigned long, VieVS::StationSourcePath>& source_paths = srcTraj->getAllPaths(station_name);
+
+    srcTraj_selectedStation = srcTraj_network.value().getStation(station_name).getId();
+
+    // for(auto i = 0; i < source_paths.size(); ++i) {
+    for(auto const& entry : source_paths) {
+        const VieVS::StationSourcePath& curr_path = entry.second;
+        unsigned long id = entry.first;
         std::shared_ptr<VieVS::AbstractSource> curr_source = srcTraj_source_list.value().refSource(id);
 
         QTreeWidgetItem* node = new QTreeWidgetItem(ui->srcTraj_stationTraj);
@@ -7097,22 +7104,60 @@ void MainWindow::on_srcTraj_selectedStations_clicked(const QModelIndex &index)
     ui->srcTraj_stationTraj->resizeColumnToContents(0);
 }
 
-void MainWindow::srcTraj_skyPlot_populate_trajectory(unsigned long id) {
-    std::cout << "full: " << id << std::endl;
+void configure_srcTraj_skyPlot_axes(QPolarChart* skyPlot) {
+    skyPlot->createDefaultAxes();
 
+    QValueAxis* axis_el = qobject_cast<QValueAxis*>(skyPlot->axes(QPolarChart::PolarOrientationRadial).first());
+    axis_el->setGridLineVisible();
+    axis_el->setLabelsVisible(false);
+    axis_el->setRange(0.0, 90.0);
+
+    QValueAxis* axis_az = qobject_cast<QValueAxis*>(skyPlot->axes(QPolarChart::PolarOrientationAngular).first());
+    axis_az->setGridLineVisible();
+    axis_az->setRange(0.0, 360.0);
+}
+
+void MainWindow::srcTraj_skyPlot_populate_trajectory(unsigned long id) {
     if(!srcTraj_skyPlotView_added) {
         ui->srcTraj_skyPlotFrame->addWidget(srcTraj_skyPlotView);
-        srcTraj_skyPlot->createDefaultAxes();
         srcTraj_skyPlotView_added = true;
     }
-    
+
+    std::vector<VieVS::PointingVector> path = srcTraj->getPath(srcTraj_selectedStation, id).getVectors();
+
+    QList<QPointF> points;
+    for(auto i = 0; i < path.size(); ++i) {
+        VieVS::PointingVector curr = path[i];
+        double az = curr.getAz() * 180.0 / 3.141592653589793;
+        double el = 90.0 - curr.getEl() * 180.0 / 3.141592653589793;
+        if(el >= 0.0 && el <= 90.0) points.append(QPointF(az, el));
+    }
+
+    auto traj = new QScatterSeries();
+    traj->setMarkerSize(traj->markerSize() * 0.75);
+    traj->append(points);
+
+    srcTraj_skyPlot->removeAllSeries();
+    srcTraj_skyPlot->addSeries(traj);
+
+    configure_srcTraj_skyPlot_axes(srcTraj_skyPlot);
+
+    srcTraj_skyPlot->legend()->hide();
     srcTraj_skyPlotView->show();
 }
 
 void MainWindow::srcTraj_skyPlot_populate_single_entry(unsigned long id, int idx) {
-    std::cout << "single: " << id << "[" << idx << "]" << std::endl;
-
     srcTraj_skyPlot_populate_trajectory(id);
+
+    VieVS::PointingVector pv = srcTraj->getPath(srcTraj_selectedStation, id).getVectors()[idx];
+
+    auto highlight = new QScatterSeries();
+    double az = pv.getAz() * 180.0 / 3.141592653589793;
+    double el = 90.0 - pv.getEl() * 180.0 / 3.141592653589793;
+    if(el >= 0.0 && el <= 90.0) highlight->append(QPointF(az, el));
+
+    srcTraj_skyPlot->addSeries(highlight);
+    configure_srcTraj_skyPlot_axes(srcTraj_skyPlot);
 }
 
 void MainWindow::on_srcTraj_stationTraj_itemClicked(QTreeWidgetItem *item, int column)
