@@ -6980,6 +6980,8 @@ void MainWindow::srcTraj_setEnabled(bool enabled) {
     if(!enabled) {
         ui->srcTraj_stationTraj->clear();
         ui->srcTraj_selectedStations->selectionModel()->clearSelection();
+        srcTraj_skyPlot->removeAllSeries();
+        srcTraj_skyPlotView->hide();
     }
 
     ui->srcTraj_buildModelButton->setEnabled(!enabled && (selectedStationModel->rowCount() > 0));
@@ -6989,7 +6991,7 @@ void MainWindow::srcTraj_setEnabled(bool enabled) {
 
 void MainWindow::on_actionSource_Trajectories_triggered()
 {
-    ui->srcTraj_stationTraj->setHeaderLabels({"Name", "Time", "Az", "El"});
+    ui->srcTraj_stationTraj->setHeaderLabels({"Id", "Name", "Time", "Az", "El"});
     ui->main_stacked->setCurrentIndex(26);
 }
 
@@ -7077,16 +7079,51 @@ void MainWindow::on_srcTraj_selectedStations_clicked(const QModelIndex &index)
 
         QTreeWidgetItem* node = new QTreeWidgetItem(ui->srcTraj_stationTraj);
         QString curr_source_name = QString::fromStdString(curr_source->getName());
-        node->setText(0, curr_source_name);
+        QString curr_source_id = QString::number(curr_source->getId());
+        node->setText(1, curr_source_name);
+        node->setText(0, curr_source_id);
 
         const std::vector<VieVS::PointingVector>& traj = curr_path.getVectors();
         for(auto j = 0; j < traj.size(); ++j) {
             const VieVS::PointingVector& curr_vec = traj[j];
             
             QTreeWidgetItem* entry = new QTreeWidgetItem(node);
-            entry->setText(1, QString::number(curr_vec.getTime()));
-            entry->setText(2, QString::number(curr_vec.getAz()));
-            entry->setText(3, QString::number(curr_vec.getEl()));
+            entry->setText(2, QString::number(curr_vec.getTime()));
+            entry->setText(3, QString::number(curr_vec.getAz()));
+            entry->setText(4, QString::number(curr_vec.getEl()));
         }
+    }
+
+    ui->srcTraj_stationTraj->resizeColumnToContents(0);
+}
+
+void MainWindow::srcTraj_skyPlot_populate_trajectory(unsigned long id) {
+    std::cout << "full: " << id << std::endl;
+
+    if(!srcTraj_skyPlotView_added) {
+        ui->srcTraj_skyPlotFrame->addWidget(srcTraj_skyPlotView);
+        srcTraj_skyPlot->createDefaultAxes();
+        srcTraj_skyPlotView_added = true;
+    }
+    
+    srcTraj_skyPlotView->show();
+}
+
+void MainWindow::srcTraj_skyPlot_populate_single_entry(unsigned long id, int idx) {
+    std::cout << "single: " << id << "[" << idx << "]" << std::endl;
+
+    srcTraj_skyPlot_populate_trajectory(id);
+}
+
+void MainWindow::on_srcTraj_stationTraj_itemClicked(QTreeWidgetItem *item, int column)
+{
+    QTreeWidgetItem* parent = item->parent();
+    unsigned long id;
+    if(parent) {
+        id = parent->data(0, Qt::DisplayRole).toUInt();
+        srcTraj_skyPlot_populate_single_entry(id, parent->indexOfChild(item));
+    } else {
+        id = item->data(0, Qt::DisplayRole).toUInt();
+        srcTraj_skyPlot_populate_trajectory(id);
     }
 }

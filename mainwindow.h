@@ -555,6 +555,12 @@ private slots:
 
     void on_srcTraj_selectedStations_clicked(const QModelIndex &index);
 
+    void on_srcTraj_stationTraj_itemClicked(QTreeWidgetItem *item, int column);
+
+    void srcTraj_skyPlot_populate_trajectory(unsigned long id);
+
+    void srcTraj_skyPlot_populate_single_entry(unsigned long id, int idx);
+
 private:
     Ui::MainWindow *ui;
     QString mainPath;
@@ -578,8 +584,11 @@ private:
     boost::optional<VieVS::Network> srcTraj_network;
     boost::optional<VieVS::SourceList> srcTraj_source_list;
     VieVS::NetworkSourcePaths *srcTraj = nullptr;
+    QPolarChart* srcTraj_skyPlot = new QPolarChart;
+    QChartView* srcTraj_skyPlotView = new QChartView(srcTraj_skyPlot);
     std::unordered_map<std::string, std::unique_ptr<VieVS::AbstractFlux>> srcTraj_dummyFlux;
     bool srcTraj_enabled = false;
+    bool srcTraj_skyPlotView_added = false;
 
     QStandardItemModel *selectedSourceModel;
     QStandardItemModel *selectedBaselineModel;

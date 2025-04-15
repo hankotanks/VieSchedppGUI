@@ -1264,7 +1264,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>958</width>
+             <width>316</width>
              <height>805</height>
             </rect>
            </property>
@@ -11410,6 +11410,9 @@ https://git.geo.tuwien.ac.at/vievs/VieSchedpp/VieSchedppGUI.git&quot;&gt;&lt;spa
              </property>
             </column>
            </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="srcTraj_skyPlotFrame"/>
           </item>
          </layout>
         </item>
