@@ -34,3 +34,19 @@
 *.exe
 *.out
 *.app
+
+# Added in @hankotanks fork
+Makefile
+VieSchedppGUI
+VieSchedppGUI.exe
+.qmake.stash
+.qtc_clangd
+AUTO_DOWNLOAD_CATALOGS/*
+AUTO_DOWNLOAD_MASTER/*
+settings.xml
+*.cpp
+*.h
+!main.cpp
+!mainwindow.cpp
+!mainwindow.h
+!mainwindows_save_and_load.cpp

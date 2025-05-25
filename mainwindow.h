@@ -543,11 +543,16 @@ private slots:
 
     void on_spinBox_int_downtime_valueChanged(int arg1);
 
+    void on_actionGlobal_Opt_triggered();
+
+    void on_globalopt_useILPCheckbox_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
     QString mainPath;
     boost::property_tree::ptree settings_;
     bool noMessageBoxes = false;
+    bool useILP = false;
 
     boost::optional<VieVS::ObservingMode> advancedObservingMode_;
 

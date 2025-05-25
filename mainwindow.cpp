@@ -1045,6 +1045,7 @@ void MainWindow::on_actionRun_triggered()
             QString program = absolutePathToExe;
             QStringList arguments;
             arguments << fullPath;
+            if(useILP) arguments << QString("--ilp");
             start->start(program, arguments);
         #endif
 
@@ -6851,5 +6852,17 @@ void MainWindow::on_spinBox_int_downtime_valueChanged(int arg1)
     }
 
     stationSetupWidget->on_pushButton_IvsDownTime_clicked();
+}
+
+
+void MainWindow::on_actionGlobal_Opt_triggered()
+{
+    ui->main_stacked->setCurrentIndex(25);
+}
+
+
+void MainWindow::on_globalopt_useILPCheckbox_stateChanged(int arg1)
+{
+    useILP = (bool) arg1;
 }
 
