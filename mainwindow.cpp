@@ -1039,8 +1039,17 @@ void MainWindow::on_actionRun_triggered()
         #ifdef Q_OS_WIN
             QString program = absolutePathToExe;
             //program = "\""+program+"\"";
+            if(useILP) {
+                useILP = false;
+                QString output = "The ILP scheduler is not available on Windows.\nScheduling will continue with the default scheduler.";
+                QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+                fixedFont.setPointSize(8);
+                QMessageBox *msg = new QMessageBox(QMessageBox::Information, "Scheduling", output, QMessageBox::Ok, this);
+                msg->setFont(fixedFont);
+                msg->exec();
+            }
             start->start("cmd.exe",
-                         QStringList() << "/c" << program << fullPath << QString("--ilp"));
+                         QStringList() << "/c" << program << fullPath);
         #else
             QString program = absolutePathToExe;
             QStringList arguments;
