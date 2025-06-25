@@ -1040,7 +1040,7 @@ void MainWindow::on_actionRun_triggered()
             QString program = absolutePathToExe;
             //program = "\""+program+"\"";
             start->start("cmd.exe",
-                         QStringList() << "/c" << program << fullPath);
+                         QStringList() << "/c" << program << fullPath << QString("--ilp"));
         #else
             QString program = absolutePathToExe;
             QStringList arguments;
