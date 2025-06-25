@@ -149,6 +149,7 @@ win32{
 }
 
 SOURCES += \
+    ../VieSchedpp/GlobalOptScheduler.cpp \
     ../VieSchedpp/Input/LogParser.cpp \
     ../VieSchedpp/Input/SkdCatalogReader.cpp \
     ../VieSchedpp/Input/SkdParser.cpp \
